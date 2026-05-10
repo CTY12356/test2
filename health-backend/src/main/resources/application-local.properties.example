@@ -1,0 +1,10 @@
+# 复制本文件为 application-local.properties（同目录）后填写真实值。
+# application-local.properties 已被 .gitignore，不会提交；切勿把密钥写进本 .example 文件。
+#
+# 主配置已包含：spring.config.import=optional:classpath:application-local.properties
+# 因此一般无需再设 spring.profiles.active=local，保存 application-local.properties 后重启后端即可。
+
+app.food-vision.enabled=true
+app.food-vision.api-key=请填方舟API_Key
+app.food-vision.base-url=https://ark.cn-beijing.volces.com/api/v3
+# app.food-vision.model=请填「在线推理」接入点 ID（ep- 开头）。勿使用「批量推理」接入点，否则会 403（仅支持 batch/chat/completions）。

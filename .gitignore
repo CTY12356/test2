@@ -1,0 +1,13 @@
+node_modules/
+dist/
+target/
+uploads/
+.idea/
+.vscode/
+*.log
+*.class
+.DS_Store
+Thumbs.db
+
+# 本地密钥（若仓库根目录在 test2）
+health-backend/src/main/resources/application-local.properties
