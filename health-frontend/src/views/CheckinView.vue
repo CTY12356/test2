@@ -2,7 +2,8 @@
 import { reactive, ref, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { createDietRecord, createExerciseRecord, searchFoodCalories, recognizeFoodFromImage } from '../api/health'
-import { MEAL_TYPES, EXERCISE_INTENSITIES } from '../constants/options'
+import { MEAL_TYPES, EXERCISE_INTENSITIES, EXERCISE_TYPES } from '../constants/options'
+import { API_BASE } from '../constants/apiBase'
 import { useUserStore } from '../stores/user'
 
 const userStore = useUserStore()
@@ -31,7 +32,7 @@ const diet = reactive({
 
 const exercise = reactive({
   recordDate: today,
-  exerciseType: '',
+  exerciseType: EXERCISE_TYPES[0].value,
   durationMinutes: 30,
   intensity: 'MODERATE',
   caloriesBurned: 0,
@@ -45,7 +46,7 @@ const dietRules = {
 }
 
 const exerciseRules = {
-  exerciseType: [{ required: true, message: '请输入运动类型', trigger: 'blur' }],
+  exerciseType: [{ required: true, message: '请选择运动类型', trigger: 'change' }],
   durationMinutes: [{ required: true, type: 'number', min: 1, message: '时长至少 1 分钟', trigger: 'blur' }],
   caloriesBurned: [{ required: true, type: 'number', min: 0, message: '请输入消耗热量', trigger: 'blur' }],
 }
@@ -178,7 +179,7 @@ async function saveExercise() {
     const { data } = await createExerciseRecord(exercise)
     if (data.success) {
       ElMessage.success('运动记录已保存')
-      exercise.exerciseType = ''
+      exercise.exerciseType = EXERCISE_TYPES[0].value
       exercise.durationMinutes = 30
       exercise.caloriesBurned = 0
       exercise.imageUrl = ''
@@ -195,10 +196,25 @@ async function saveExercise() {
 </script>
 
 <template>
-  <h2 class="page-title">每日打卡</h2>
+  <div class="checkin-header">
+    <h2 class="page-title">每日打卡</h2>
+    <p class="checkin-subtitle">记录饮食与运动，系统会自动汇总到总览页。</p>
+  </div>
+  <el-alert
+    title="小提示：优先使用下拉/推荐项，数据会更稳定，趋势图也更准确。"
+    type="info"
+    :closable="false"
+    show-icon
+    class="checkin-tip"
+  />
   <div class="grid">
-    <el-card shadow="hover">
-      <h3>饮食记录</h3>
+    <el-card shadow="hover" class="checkin-card">
+      <template #header>
+        <div class="card-title-wrap">
+          <h3>饮食记录</h3>
+          <span class="muted">可上传图片并识别热量</span>
+        </div>
+      </template>
       <el-form ref="dietRef" :model="diet" :rules="dietRules" label-width="90px">
         <el-form-item label="日期">
           <el-date-picker v-model="diet.recordDate" value-format="YYYY-MM-DD" />
@@ -242,7 +258,7 @@ async function saveExercise() {
         <el-form-item label="图片">
           <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
             <el-upload
-              action="/api/uploads/images"
+              :action="`${API_BASE}/uploads/images`"
               :headers="uploadHeaders"
               :show-file-list="false"
               :on-success="handleDietUpload"
@@ -291,14 +307,21 @@ async function saveExercise() {
       </ul>
     </el-dialog>
 
-    <el-card shadow="hover">
-      <h3>运动记录</h3>
+    <el-card shadow="hover" class="checkin-card">
+      <template #header>
+        <div class="card-title-wrap">
+          <h3>运动记录</h3>
+          <span class="muted">选择常见运动，方便统计分析</span>
+        </div>
+      </template>
       <el-form ref="exerciseRef" :model="exercise" :rules="exerciseRules" label-width="90px">
         <el-form-item label="日期">
           <el-date-picker v-model="exercise.recordDate" value-format="YYYY-MM-DD" />
         </el-form-item>
         <el-form-item label="类型" prop="exerciseType">
-          <el-input v-model="exercise.exerciseType" placeholder="跑步、游泳、力量训练" clearable />
+          <el-select v-model="exercise.exerciseType" placeholder="请选择运动类型">
+            <el-option v-for="item in EXERCISE_TYPES" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="时长" prop="durationMinutes">
           <el-input-number v-model="exercise.durationMinutes" :min="1" />
@@ -319,7 +342,7 @@ async function saveExercise() {
         <el-form-item label="截图">
           <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
             <el-upload
-              action="/api/uploads/images"
+              :action="`${API_BASE}/uploads/images`"
               :headers="uploadHeaders"
               :show-file-list="false"
               :on-success="handleExerciseUpload"
@@ -346,6 +369,52 @@ async function saveExercise() {
 </template>
 
 <style scoped>
+.checkin-header {
+  margin-bottom: 12px;
+}
+
+.checkin-subtitle {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.checkin-tip {
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.checkin-card {
+  height: 100%;
+}
+
+.card-title-wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-title-wrap h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+:deep(.el-form-item__content > .el-select),
+:deep(.el-form-item__content > .el-date-editor),
+:deep(.el-form-item__content > .el-autocomplete),
+:deep(.el-form-item__content > .el-input),
+:deep(.el-form-item__content > .el-input-number) {
+  width: 100%;
+  max-width: 420px;
+}
+
 .food-autocomplete {
   width: 100%;
   max-width: 420px;
@@ -389,5 +458,20 @@ async function saveExercise() {
   font-size: 12px;
   margin: 4px 0 6px;
   line-height: 1.35;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-title-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  :deep(.el-form-item) {
+    margin-bottom: 16px;
+  }
 }
 </style>

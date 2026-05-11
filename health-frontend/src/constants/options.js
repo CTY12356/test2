@@ -11,6 +11,16 @@ export const EXERCISE_INTENSITIES = [
   { label: '高', value: 'HIGH' },
 ]
 
+export const EXERCISE_TYPES = [
+  { label: '跑步', value: '跑步' },
+  { label: '快走', value: '快走' },
+  { label: '骑行', value: '骑行' },
+  { label: '游泳', value: '游泳' },
+  { label: '跳绳', value: '跳绳' },
+  { label: '力量训练', value: '力量训练' },
+  { label: '瑜伽', value: '瑜伽' },
+]
+
 export const ACTIVITY_LEVELS = [
   { label: '久坐少动', value: 'SEDENTARY' },
   { label: '轻度活动', value: 'LIGHT' },

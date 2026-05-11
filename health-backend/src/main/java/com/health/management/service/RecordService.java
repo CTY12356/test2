@@ -1,6 +1,7 @@
 package com.health.management.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.health.management.common.ExerciseConstants;
 import com.health.management.dto.HealthDtos.DailySummaryResponse;
 import com.health.management.dto.RecordDtos.DietRecordRequest;
 import com.health.management.dto.RecordDtos.ExerciseRecordRequest;
@@ -169,6 +170,9 @@ public class RecordService {
     }
 
     private void applyExercise(ExerciseRecord record, ExerciseRecordRequest request) {
+        if (!ExerciseConstants.ALLOWED_EXERCISE_TYPES.contains(request.getExerciseType())) {
+            throw new IllegalArgumentException("运动类型不合法，请从常见运动中选择");
+        }
         record.setExerciseType(request.getExerciseType());
         record.setRecordDate(request.getRecordDate());
         record.setDurationMinutes(request.getDurationMinutes());

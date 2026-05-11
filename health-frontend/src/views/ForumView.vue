@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { Plus, ChatDotRound, Pointer, Warning } from '@element-plus/icons-vue'
 import { getPosts, createPost, getComments, createComment, likePost, reportContent } from '../api/forum'
 import { FORUM_CATEGORIES } from '../constants/options'
+import { API_BASE } from '../constants/apiBase'
 import { useUserStore } from '../stores/user'
 
 const userStore = useUserStore()
@@ -326,7 +327,7 @@ onMounted(loadPosts)
       <el-form-item label="配图">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
           <el-upload
-            action="/api/uploads/images"
+            :action="`${API_BASE}/uploads/images`"
             :headers="uploadHeaders"
             :show-file-list="false"
             :on-success="handleUpload"

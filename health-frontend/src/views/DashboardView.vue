@@ -138,10 +138,10 @@ onMounted(loadAll)
 
 <template>
   <!-- 标题 + 日期选择 -->
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
-    <h2 class="page-title" style="margin:0;">数据总览</h2>
-    <div style="display:flex; align-items:center; gap:8px;">
-      <span style="font-size:13px; color:#6b7280;">选择日期：</span>
+  <div class="dashboard-header">
+    <h2 class="page-title dashboard-title">数据总览</h2>
+    <div class="date-toolbar">
+      <span class="date-label">选择日期：</span>
       <el-date-picker
         v-model="selectedDate"
         type="date"
@@ -149,7 +149,7 @@ onMounted(loadAll)
         format="YYYY-MM-DD"
         value-format="YYYY-MM-DD"
         :disabled-date="d => d > new Date()"
-        style="width:160px;"
+        class="date-picker"
         size="small"
       />
       <el-button size="small" @click="selectedDate = today" :type="isToday() ? 'primary' : 'default'">
@@ -166,7 +166,7 @@ onMounted(loadAll)
 
   <template v-else>
     <!-- 热量概览卡片 -->
-    <div class="stats-grid" style="margin-bottom: 20px;">
+    <div class="stats-grid dashboard-section">
       <el-card shadow="hover" class="stat-card">
         <div class="stat-label">{{ dateLabel() }}摄入</div>
         <div class="stat-value">
@@ -209,7 +209,7 @@ onMounted(loadAll)
           : `${dateLabel()}摄入高于消耗，建议适当控制饮食或增加运动。`"
       show-icon
       :closable="false"
-      style="margin-bottom: 20px;"
+      class="dashboard-section"
     />
     <el-alert
       v-else-if="!loading"
@@ -218,15 +218,15 @@ onMounted(loadAll)
       :description="isToday() ? '去「每日打卡」记录今天的饮食和运动吧！' : '该日期没有打卡数据。'"
       show-icon
       :closable="false"
-      style="margin-bottom: 20px;"
+      class="dashboard-section"
     />
 
     <!-- 7天趋势图 -->
-    <el-card shadow="hover" style="margin-bottom: 20px;">
+    <el-card shadow="hover" class="dashboard-section">
       <template #header>
         <span style="font-weight:600;">近 7 天热量趋势</span>
       </template>
-      <div ref="chartRef" style="width:100%; height:240px;" />
+      <div ref="chartRef" class="trend-chart" />
     </el-card>
 
     <!-- 饮食 + 运动记录 -->
@@ -234,7 +234,7 @@ onMounted(loadAll)
       <!-- 饮食记录 -->
       <el-card shadow="hover">
         <template #header>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="card-header">
             <span style="font-weight:600;">{{ dateLabel() }}饮食</span>
             <el-button v-if="isToday()" type="primary" link @click="router.push('/checkin')">去打卡</el-button>
           </div>
@@ -255,7 +255,7 @@ onMounted(loadAll)
             </template>
           </el-table-column>
         </el-table>
-        <div v-if="dietRecords.length > 0" style="margin-top:10px; text-align:right; font-size:13px; color:#6b7280;">
+        <div v-if="dietRecords.length > 0" class="table-footer-hint">
           合计 {{ dietRecords.reduce((s, r) => s + Number(r.calories), 0).toFixed(1) }} kcal
         </div>
       </el-card>
@@ -263,7 +263,7 @@ onMounted(loadAll)
       <!-- 运动记录 -->
       <el-card shadow="hover">
         <template #header>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="card-header">
             <span style="font-weight:600;">{{ dateLabel() }}运动</span>
             <el-button v-if="isToday()" type="primary" link @click="router.push('/checkin')">去打卡</el-button>
           </div>
@@ -286,7 +286,7 @@ onMounted(loadAll)
             </template>
           </el-table-column>
         </el-table>
-        <div v-if="exerciseRecords.length > 0" style="margin-top:10px; text-align:right; font-size:13px; color:#6b7280;">
+        <div v-if="exerciseRecords.length > 0" class="table-footer-hint">
           {{ exerciseRecords.reduce((s, r) => s + Number(r.durationMinutes), 0) }} 分钟 ·
           消耗 {{ exerciseRecords.reduce((s, r) => s + Number(r.caloriesBurned), 0).toFixed(1) }} kcal
         </div>
@@ -294,3 +294,71 @@ onMounted(loadAll)
     </div>
   </template>
 </template>
+
+<style scoped>
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.dashboard-title {
+  margin: 0;
+}
+
+.date-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.date-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.date-picker {
+  width: 160px;
+}
+
+.dashboard-section {
+  margin-bottom: 20px;
+}
+
+.trend-chart {
+  width: 100%;
+  height: 240px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-footer-hint {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .date-label {
+    display: none;
+  }
+
+  .date-picker {
+    width: 140px;
+  }
+
+  .trend-chart {
+    height: 210px;
+  }
+}
+</style>

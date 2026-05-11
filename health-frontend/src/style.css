@@ -160,3 +160,53 @@ body {
 .success {
   color: #16a34a;
 }
+
+@media (max-width: 992px) {
+  .sidebar {
+    width: 180px !important;
+  }
+
+  .sidebar-logo {
+    padding: 16px;
+  }
+
+  .logo-text {
+    font-size: 16px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    width: 100% !important;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .topbar {
+    padding: 0 12px;
+    min-height: 52px;
+  }
+
+  .disclaimer {
+    display: none;
+  }
+
+  .topbar-user {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+}

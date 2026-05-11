@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '../stores/user'
 import { getMe, updateMe } from '../api/user'
+import { API_BASE } from '../constants/apiBase'
 
 const userStore = useUserStore()
 const profile = ref(null)
@@ -64,7 +65,7 @@ onMounted(loadMe)
           {{ (form.avatarUrl ? '' : (profile.nickname || profile.username || '?')[0].toUpperCase()) }}
         </el-avatar>
         <el-upload
-          action="/api/uploads/images"
+          :action="`${API_BASE}/uploads/images`"
           :headers="uploadHeaders"
           :show-file-list="false"
           :on-success="handleAvatarUpload"
